@@ -30,9 +30,8 @@ import Dashboard from "./components/layouts/Dashboard";
 import AnimalsList from "./components/layouts/Animals";
 import Reports from "./components/layouts/Reports";
 
-// Router definition
 export const router = createBrowserRouter([
-  // Public routes
+  // 🔓 Public routes
   {
     path: "/auth",
     element: <AuthLayout />,
@@ -42,7 +41,7 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Private (authenticated) routes
+  // 🔒 Private (authenticated) routes
   {
     path: "/",
     element: <AppLayout />,
@@ -53,5 +52,4 @@ export const router = createBrowserRouter([
       { path: "reports", element: <Reports /> },
     ],
   },
-
 ]);

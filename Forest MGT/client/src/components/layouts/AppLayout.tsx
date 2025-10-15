@@ -49,17 +49,32 @@
 // export default LandingPage;
 
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../ui/Navbar";
 import Sidebar from "../ui/Sidebar";
 
 const AppLayout = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
-  // Redirect to login if not authenticated
+  // ✅ Watch for token changes (login/logout updates)
   useEffect(() => {
-    if (!token) navigate("/auth/login");
+    const handleStorageChange = () => {
+      setToken(localStorage.getItem("token"));
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // ✅ Redirect logic
+  useEffect(() => {
+    if (!token) {
+      // Not logged in → Go to login
+      navigate("/auth/login");
+    } else if (window.location.pathname === "/") {
+      // Logged in but still on root → Go to dashboard
+      navigate("/dashboard");
+    }
   }, [token, navigate]);
 
   return (
@@ -79,3 +94,5 @@ const AppLayout = () => {
 };
 
 export default AppLayout;
+
+
