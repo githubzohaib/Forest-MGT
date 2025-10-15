@@ -1,49 +1,81 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
+// import Navbar from "../ui/Navbar";
+// import FooterSection from "./Reports";
+// import Hero from "./Weather";
+
+// const fadeInUp = {
+//   hidden: { opacity: 0, y: 40 },
+//   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+// };
+
+// const LandingPage = () => {
+//   return (
+//     <div
+//       className={`min-h-screen flex flex-col transition-colors duration-300`}
+//       id="home"
+//     >
+
+//       {/* Header */}
+//       <Navbar />
+
+//       {/* Hero Section */}
+//       <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+//         <Hero/>
+//       </motion.div>
+
+//       {/* About Us Section */}
+//       {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+//         <AboutUs />
+//       </motion.div> */}
+
+//       {/* Faculty Reviews Section */}
+//       {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+//         <FacultyReviews />
+//       </motion.div> */}
+
+//       {/* Why Us Section */}
+//       {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+//         <WhyUs />
+//       </motion.div> */}
+
+//       {/* Footer */}
+//       {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+//         <FooterSection />
+//       </motion.div> */}
+//     </div>
+//   );
+// };
+
+// export default LandingPage;
+
+import { Outlet, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Navbar from "../ui/Navbar";
-import FooterSection from "./FooterSection";
-import Hero from "./Hero";
+import Sidebar from "../ui/Sidebar";
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-};
+const AppLayout = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
-const LandingPage = () => {
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!token) navigate("/auth/login");
+  }, [token, navigate]);
+
   return (
-    <div
-      className={`min-h-screen flex flex-col transition-colors duration-300`}
-      id="home"
-    >
+    <div className="min-h-screen flex bg-gray-50 text-gray-800">
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Header */}
-      <Navbar />
-
-      {/* Hero Section */}
-      <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-        <Hero/>
-      </motion.div>
-
-      {/* About Us Section */}
-      {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-        <AboutUs />
-      </motion.div> */}
-
-      {/* Faculty Reviews Section */}
-      {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-        <FacultyReviews />
-      </motion.div> */}
-
-      {/* Why Us Section */}
-      {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-        <WhyUs />
-      </motion.div> */}
-
-      {/* Footer */}
-      {/* <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-        <FooterSection />
-      </motion.div> */}
+      {/* Main content area */}
+      <div className="flex flex-col flex-1">
+        <Navbar />
+        <main className="p-6 flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };
 
-export default LandingPage;
+export default AppLayout;
