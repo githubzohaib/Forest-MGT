@@ -12,71 +12,67 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  const validateEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const validateForm = (): boolean => {
     const newErrors: { email?: string; password?: string } = {};
-
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!password) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
+    if (!email) newErrors.email = 'Email is required';
+    else if (!validateEmail(email)) newErrors.email = 'Please enter a valid email';
+    if (!password) newErrors.password = 'Password is required';
+    else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
-
     setIsLoading(true);
     setLoginSuccess(false);
-
-    // Simulate API call
     setTimeout(() => {
-      const fakeToken = "abc123";
-      localStorage.setItem("token", fakeToken);
+      localStorage.setItem("token", "abc123");
       window.dispatchEvent(new Event("storage"));
-      navigate("/dashboard"); // ✅ redirect after login
-
+      navigate("/dashboard");
       setIsLoading(false);
       setLoginSuccess(true);
-      console.log('Login attempted with:', { email, password, rememberMe });
-
-      // Reset success message after 3 seconds
       setTimeout(() => setLoginSuccess(false), 3000);
     }, 1500);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    if (errors.email) {
-      setErrors({ ...errors, email: undefined });
-    }
+    if (errors.email) setErrors({ ...errors, email: undefined });
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    if (errors.password) {
-      setErrors({ ...errors, password: undefined });
-    }
+    if (errors.password) setErrors({ ...errors, password: undefined });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#F1F8E9' }}>
-      <div className="w-full max-w-md">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden forest-bg">
+      {/* 🌲 Live forest animation layers */}
+      <div className="absolute inset-0 bg-gradient-to-b from-green-900 via-green-800 to-green-700 animate-gradient"></div>
+      <div className="absolute inset-0 bg-[url('https://i.ibb.co/vvYPH8v/forest-silhouette.png')] bg-cover bg-center opacity-40 animate-move"></div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <span
+            key={i}
+            className="absolute bg-yellow-300 rounded-full opacity-70 animate-firefly"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              width: '6px',
+              height: '6px',
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${4 + Math.random() * 4}s`
+            }}
+          ></span>
+        ))}
+      </div>
+
+      {/* Login box remains unchanged */}
+      <div className="relative z-10 w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style={{ backgroundColor: '#1B5E20' }}>
@@ -95,9 +91,7 @@ export default function Login() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" />
@@ -110,9 +104,7 @@ export default function Login() {
                   className={`block w-full pl-10 pr-3 py-3 border ${
                     errors.email ? 'border-red-500' : 'border-gray-300'
                   } rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
-                  style={!errors.email ? { outline: 'none' } : {}}
                   placeholder="you@example.com"
-                  autoComplete="email"
                 />
               </div>
               {errors.email && (
@@ -124,9 +116,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
@@ -140,7 +130,6 @@ export default function Login() {
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   } rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
                   placeholder="••••••••"
-                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -173,13 +162,7 @@ export default function Login() {
                 />
                 <span className="ml-2 text-sm text-gray-700">Remember me</span>
               </label>
-              <button
-                type="button"
-                className="text-sm font-medium hover:underline"
-                style={{ color: '#1B5E20' }}
-              >
-                Forgot password?
-              </button>
+              <button type="button" className="text-sm font-medium hover:underline" style={{ color: '#1B5E20' }}>Forgot password?</button>
             </div>
 
             <button
@@ -204,11 +187,7 @@ export default function Login() {
 
           <p className="mt-8 text-center text-sm text-gray-600">
             Don't have an account?{' '}
-            <button
-              type="button"
-              className="font-medium hover:underline"
-              style={{ color: '#1B5E20' }}
-            >
+            <button type="button" className="font-medium hover:underline" style={{ color: '#1B5E20' }}>
               Sign up
             </button>
           </p>
@@ -216,11 +195,37 @@ export default function Login() {
 
         <p className="mt-6 text-center text-xs text-gray-500">
           By signing in, you agree to our{' '}
-          <button type="button" className="underline hover:text-gray-700">Terms of Service</button>
-          {' '}and{' '}
+          <button type="button" className="underline hover:text-gray-700">Terms of Service</button> and{' '}
           <button type="button" className="underline hover:text-gray-700">Privacy Policy</button>
         </p>
       </div>
+
+      {/* ✨ Animation styles */}
+      <style>{`
+        .animate-gradient {
+          animation: gradientShift 10s ease infinite;
+        }
+        @keyframes gradientShift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-move {
+          animation: forestMove 30s linear infinite;
+        }
+        @keyframes forestMove {
+          0% { background-position: 0 0; }
+          100% { background-position: -1000px 0; }
+        }
+        .animate-firefly {
+          animation: fly 6s ease-in-out infinite alternate;
+        }
+        @keyframes fly {
+          0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+          50% { transform: translate(20px, -30px) scale(1.2); opacity: 1; }
+          100% { transform: translate(-20px, 20px) scale(0.8); opacity: 0.6; }
+        }
+      `}</style>
     </div>
   );
 }
