@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, User, Shield, Leaf, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // ✅ Add navigation for redirect
 
 const USER_ROLES = [
   { id: 'visitor', name: 'Visitor', icon: User, color: 'from-emerald-600 to-teal-700' },
@@ -8,6 +9,7 @@ const USER_ROLES = [
 ];
 
 export default function Login() {
+  const navigate = useNavigate(); // ✅ For redirecting user
   const [currentView, setCurrentView] = useState('login');
   const [formData, setFormData] = useState({
     email: '',
@@ -31,49 +33,32 @@ export default function Login() {
   const [navStack, setNavStack] = useState(['login']);
   const [attemptQueue, setAttemptQueue] = useState([]);
   
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-  
-  const validatePassword = (password) => {
-    return password.length >= 8;
-  };
-  
-  const validateRole = (role) => {
-    return USER_ROLES.some((r) => r.id === role);
-  };
-  
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePassword = (password) => password.length >= 8;
+  const validateRole = (role) => USER_ROLES.some((r) => r.id === role);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSignupInputChange = (e) => {
     const { name, value } = e.target;
     setSignupData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
-  
+
   const handleRoleSelect = (roleId) => {
     setFormData((prev) => ({ ...prev, role: roleId }));
-    if (errors.role) {
-      setErrors((prev) => ({ ...prev, role: '' }));
-    }
+    if (errors.role) setErrors((prev) => ({ ...prev, role: '' }));
   };
 
   const handleSignupRoleSelect = (roleId) => {
     setSignupData((prev) => ({ ...prev, role: roleId }));
-    if (errors.role) {
-      setErrors((prev) => ({ ...prev, role: '' }));
-    }
+    if (errors.role) setErrors((prev) => ({ ...prev, role: '' }));
   };
-  
+
   const addLoginAttempt = (email) => {
     const attempt = { email, timestamp: Date.now() };
     setAttemptQueue((prev) => {
@@ -81,93 +66,81 @@ export default function Login() {
       return newQueue.length > 5 ? newQueue.slice(1) : newQueue;
     });
   };
-  
+
   const getRecentAttempts = (email) => {
     const now = Date.now();
-    const timeWindow = 300000;
+    const timeWindow = 300000; // 5 min
     return attemptQueue.filter(
       (a) => a.email === email && (now - a.timestamp) < timeWindow
     ).length;
   };
-  
+
+  // ✅ Updated handleLogin
   const handleLogin = () => {
     const newErrors = {};
-    
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Invalid email format';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (!validatePassword(formData.password)) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-    
-    if (!validateRole(formData.role)) {
-      newErrors.role = 'Please select a valid role';
-    }
-    
+
+    if (!formData.email) newErrors.email = 'Email is required';
+    else if (!validateEmail(formData.email)) newErrors.email = 'Invalid email format';
+
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (!validatePassword(formData.password)) newErrors.password = 'Password must be at least 8 characters';
+
+    if (!validateRole(formData.role)) newErrors.role = 'Please select a valid role';
+
     const recentAttempts = getRecentAttempts(formData.email);
-    if (recentAttempts >= 5) {
-      newErrors.general = 'Too many login attempts. Please try again later.';
-    }
-    
+    if (recentAttempts >= 5) newErrors.general = 'Too many login attempts. Please try again later.';
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     addLoginAttempt(formData.email);
     setIsLoading(true);
     setErrors({});
-    
+
     setTimeout(() => {
       setIsLoading(false);
       console.log('Login attempt:', { ...formData, rememberMe });
+
+      // ✅ Simulate successful login
+      const fakeToken = 'ecoGuardUserToken123';
+      localStorage.setItem('token', fakeToken);
+
       setSuccessMessage('Login successful! Redirecting...');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      // ✅ Redirect after short delay
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
     }, 1500);
   };
 
   const handleSignup = () => {
     const newErrors = {};
-    
-    if (!signupData.name || signupData.name.length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
-    }
-    
-    if (!signupData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(signupData.email)) {
-      newErrors.email = 'Invalid email format';
-    }
-    
-    if (!signupData.password) {
-      newErrors.password = 'Password is required';
-    } else if (!validatePassword(signupData.password)) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-    
-    if (!signupData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (signupData.password !== signupData.confirmPassword) {
+
+    if (!signupData.name || signupData.name.length < 2) newErrors.name = 'Name must be at least 2 characters';
+
+    if (!signupData.email) newErrors.email = 'Email is required';
+    else if (!validateEmail(signupData.email)) newErrors.email = 'Invalid email format';
+
+    if (!signupData.password) newErrors.password = 'Password is required';
+    else if (!validatePassword(signupData.password)) newErrors.password = 'Password must be at least 8 characters';
+
+    if (!signupData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
+    else if (signupData.password !== signupData.confirmPassword)
       newErrors.confirmPassword = 'Passwords do not match';
-    }
-    
-    if (!validateRole(signupData.role)) {
-      newErrors.role = 'Please select a valid role';
-    }
-    
+
+    if (!validateRole(signupData.role)) newErrors.role = 'Please select a valid role';
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     setIsLoading(true);
     setErrors({});
-    
+
     setTimeout(() => {
       setIsLoading(false);
       console.log('Signup attempt:', signupData);
@@ -178,24 +151,21 @@ export default function Login() {
       }, 2000);
     }, 1500);
   };
-  
+
   const handleForgotPassword = () => {
     const newErrors = {};
-    
-    if (!forgotEmail) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(forgotEmail)) {
-      newErrors.email = 'Invalid email format';
-    }
-    
+
+    if (!forgotEmail) newErrors.email = 'Email is required';
+    else if (!validateEmail(forgotEmail)) newErrors.email = 'Invalid email format';
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     setIsLoading(true);
     setErrors({});
-    
+
     setTimeout(() => {
       setIsLoading(false);
       setSuccessMessage('Password reset link sent to your email!');
@@ -205,14 +175,14 @@ export default function Login() {
       }, 2000);
     }, 1500);
   };
-  
+
   const switchView = (view) => {
     setNavStack((prev) => [...prev, view]);
     setCurrentView(view);
     setErrors({});
     setSuccessMessage('');
   };
-  
+
   const goBack = () => {
     if (navStack.length > 1) {
       const newStack = [...navStack];
@@ -223,16 +193,13 @@ export default function Login() {
   };
 
   const handleKeyPress = (e, action) => {
-    if (e.key === 'Enter') {
-      action();
-    }
+    if (e.key === 'Enter') action();
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Slower deep flowing 30-step gradient at 135 degrees with darker greens */}
-      <div className="absolute inset-0">
-        <div 
+      <div className="min-h-screen w-max relative overflow-x-hidden bg-gradient-to-br from-green-900 to-emerald-800 flex items-center justify-center p-5">
+      <div className="absolute inset-0 overflow-hidden">
+        <div
           className="absolute inset-0"
           style={{ 
             background: `linear-gradient(135deg, 
@@ -340,16 +307,17 @@ export default function Login() {
         }
       `}</style>
       
-      <div className="w-full max-w-md relative z-10">
+      <div className="w-full max-w-md relative z-10 my-8">
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-400 to-green-600 rounded-full mb-3 shadow-2xl">
             <Leaf className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">EcoGuard</h1>
-          <p className="text-emerald-300 text-xs md:text-sm">Wildlife Management System</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1">EcoGuard</h1>
+          <p className="text-emerald-300 text-[10px] sm:text-xs md:text-sm">Wildlife Management System</p>
+
         </div>
         
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-5 md:p-7">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 sm:p-6 md:p-7">
           {successMessage && (
             <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center gap-2 text-emerald-800 text-sm">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -508,12 +476,13 @@ export default function Login() {
               </div>
               
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Create Account</h2>
-              <p className="text-gray-600 text-sm mb-5">Join EcoGuard and protect our wildlife</p>
+              <p className="text-gray-600 text-xs sm:text-sm mb-4 sm:mb-5 text-center">Join EcoGuard and protect our wildlife</p>
+
               
               <div className="space-y-4">
                 <div className="mb-4">
                   <label className="block text-gray-800 text-sm font-semibold mb-2">Select Your Role</label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                     {USER_ROLES.map((role) => {
                       const Icon = role.icon;
                       return (
@@ -709,9 +678,10 @@ export default function Login() {
           )}
         </div>
         
-        <p className="text-center text-emerald-200 text-xs md:text-sm mt-6">
-          © 2025 EcoGuard System. All rights reserved.
+        <p className="text-center text-emerald-200 text-[10px] sm:text-xs md:text-sm mt-6 px-2">
+         © 2025 EcoGuard System. All rights reserved.
         </p>
+
       </div>
     </div>
   );
