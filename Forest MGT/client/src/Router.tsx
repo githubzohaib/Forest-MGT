@@ -1,25 +1,3 @@
-// import { createBrowserRouter, Navigate } from "react-router-dom";
-// import Applayout from "./components/layouts/AppLayout";
-// import NoMatch from "./pages/NoMatch";
-// import Error500 from "./pages/Error500";
-
-// export const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <Applayout/>,
-//   },
-//   {
-//     path: "/error", // ✅ NEW
-//     element: <Error500 />,
-//   },
-//   {
-//     path: "*",
-//     element: <NoMatch />,
-//   },
-// ], {
-//   basename: global.basename
-// });
-
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import AppLayout from "./components/layouts/AppLayout";
 import AuthLayout from "./components/layouts/AuthLayout";
@@ -46,7 +24,8 @@ export const router = createBrowserRouter([
     path: "/",
     element: <AppLayout />,
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
+      // Redirect root to login page instead of dashboard
+      { index: true, element: <Navigate to="/auth/login" replace /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "animals", element: <AnimalsList /> },
       { path: "reports", element: <Reports /> },
