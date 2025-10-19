@@ -51,7 +51,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../ui/Navbar";
-import Sidebar from "../ui/Sidebar";
+// import Sidebar from "../ui/Sidebar";
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen flex bg-gray-50 text-gray-800">
       {/* Sidebar */}
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       {/* Main content area */}
       <div className="flex flex-col flex-1">

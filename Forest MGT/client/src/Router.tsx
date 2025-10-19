@@ -29,6 +29,8 @@ import Login from "./components/layouts/Login";
 import Dashboard from "./components/layouts/Dashboard";
 import AnimalsList from "./components/layouts/Animals";
 import Reports from "./components/layouts/Reports";
+import Weather from "./components/layouts/Weather";
+import AnimalSearch from "./components/layouts/AnimalSearch";
 
 export const router = createBrowserRouter([
   // 🔓 Public routes
@@ -50,6 +52,8 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <Dashboard /> },
       { path: "animals", element: <AnimalsList /> },
       { path: "reports", element: <Reports /> },
+      { path: "weather", element: <Weather /> },
+      {path: "Animalsearch",element:<AnimalSearch/>}
     ],
   },
 ]);
