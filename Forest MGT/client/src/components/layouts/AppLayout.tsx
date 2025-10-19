@@ -1,7 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Navbar from "../ui/Navbar";
-import Sidebar from "../ui/Sidebar";
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -49,17 +47,10 @@ const AppLayout = () => {
   }, [token, role, navigate]);
 
   return (
-    <div className="min-h-screen flex bg-gray-50 text-gray-800">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex flex-col flex-1">
-        <Navbar />
-        <main className="p-6 flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
-      </div>
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      <main className="p-6 flex-1 overflow-y-auto">
+        <Outlet />
+      </main>
     </div>
   );
 };
