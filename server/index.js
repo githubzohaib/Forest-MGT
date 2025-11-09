@@ -1,10 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import animalRoutes from "./routes/animalRoutes.js";
 
-dotenv.config();
 const app = express();
 
 // Middleware
@@ -13,7 +14,7 @@ app.use(cors());
 
 // Routes
 app.use("/api/auth", authRoutes);
-
+app.use("/api/animals", animalRoutes);
 // Connect DB & Start Server
 connectDB();
 
