@@ -9,6 +9,7 @@ import DashboardAdmin from "./components/layouts/DashboardAdmin";
 import Weather from "./components/layouts/Weather";
 import AnimalsList from "./components/layouts/Animals";
 import Reports from "./components/layouts/Reports";
+import AdminEdit from "./components/layouts/Adminedit"; // ✅ import AdminEdit
 
 export const router = createBrowserRouter([
   // 🔓 PUBLIC ROUTES
@@ -21,7 +22,7 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // 🔒 PROTECTED ROUTES (Require login)
+  // 🔒 PROTECTED ROUTES
   {
     path: "/",
     element: <AppLayout />,
@@ -35,6 +36,9 @@ export const router = createBrowserRouter([
       { path: "weather", element: <Weather /> },
       { path: "animals", element: <AnimalsList /> },
       { path: "reports", element: <Reports /> },
+
+      // ✅ Admin Edit page
+      { path: "adminedit", element: <AdminEdit /> }, 
 
       // Default redirect (root → login)
       { index: true, element: <Navigate to="/auth/login" replace /> },
