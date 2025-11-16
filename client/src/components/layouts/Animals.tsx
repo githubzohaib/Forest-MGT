@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Leaf, AlertCircle, MapPin, Apple, Loader, X } from 'lucide-react';
+import { Search, Leaf, AlertCircle, Loader, X } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -92,35 +92,21 @@ export default function AmazonWildlifeSearch() {
     if (e.key === 'Enter') handleSearch();
   };
 
-  return (
-    <div className="fixed inset-0 flex flex-col bg-green-950 text-white overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 -z-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(135deg, 
-              #064e3b 0%, #022c22 3.33%, #000000 6.66%, #0a3d2e 10%, 
-              #022c22 13.33%, #14532d 16.66%, #052e16 20%, #000000 23.33%, 
-              #064e3b 26.66%, #111827 30%, #000000 33.33%, #022c22 36.66%, 
-              #064e3b 40%, #052e16 43.33%, #000000 46.66%, #0a3d2e 50%, 
-              #064e3b 53.33%, #022c22 56.66%, #14532d 60%, #000000 63.33%, 
-              #064e3b 66.66%, #052e16 70%, #000000 73.33%, #022c22 76.66%, 
-              #14532d 80%, #064e3b 83.33%, #000000 86.66%, #0a3d2e 90%, 
-              #000000 93.33%, #022c22 96.66%, #064e3b 100%)`,
-            backgroundSize: '400% 400%',
-            animation: 'slowerDeepFlow 16s ease-in-out infinite',
-          }}
-        ></div>
-      </div>
+  // Glassmorphic card classes
+  const glassCard =
+    'bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-4 md:p-6 mb-4';
 
-      <style>{`
-        @keyframes slowerDeepFlow {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
+  return (
+    <div className="fixed inset-0 flex flex-col text-white overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 -z-10">
+        <img
+          src="/background2.jpg"
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/30"></div> {/* Optional dark overlay */}
+      </div>
 
       {/* Fullscreen Image Modal */}
       {fullscreenImage && (
@@ -132,7 +118,6 @@ export default function AmazonWildlifeSearch() {
             <X className="w-6 h-6 text-white" />
           </button>
 
-          {/* Responsive square container */}
           <div className="w-[90vw] max-w-[600px] aspect-square flex items-center justify-center bg-black rounded-2xl overflow-hidden shadow-2xl">
             <img
               src={fullscreenImage}
@@ -154,18 +139,18 @@ export default function AmazonWildlifeSearch() {
         </div>
 
         {/* Search Card */}
-        <div className="bg-white/90 rounded-2xl shadow-xl p-4 md:p-6 mb-4">
-          <label className="block text-gray-800 text-sm font-semibold mb-2">Search Amazon Wildlife</label>
+        <div className={glassCard}>
+          <label className="block text-white/90 text-sm font-semibold mb-2">Search Amazon Wildlife</label>
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/70" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Enter animal name (e.g., Jaguar, Anaconda)"
-                className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-800"
+                className="w-full pl-10 pr-4 py-2 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white/20 text-white placeholder-white/70"
               />
             </div>
             <button
@@ -182,7 +167,7 @@ export default function AmazonWildlifeSearch() {
           </div>
 
           {error && (
-            <div className="mt-3 p-3 bg-red-100 text-red-700 rounded-lg flex items-center gap-2 text-sm">
+            <div className="mt-3 p-3 bg-red-100/30 text-red-700 rounded-lg flex items-center gap-2 text-sm">
               <AlertCircle className="w-5 h-5" /> {error}
             </div>
           )}
@@ -190,7 +175,7 @@ export default function AmazonWildlifeSearch() {
 
         {/* Result Image */}
         {imageUrl && (
-          <div className="bg-white/90 rounded-2xl shadow-xl overflow-hidden mb-4 aspect-square">
+          <div className={`${glassCard} overflow-hidden aspect-square`}>
             <button
               onClick={() => setFullscreenImage(imageUrl)}
               className="w-full h-full hover:opacity-90 transition cursor-pointer"
@@ -206,32 +191,32 @@ export default function AmazonWildlifeSearch() {
 
         {/* Summary */}
         {summary && (
-          <div className="bg-white/90 rounded-2xl shadow-xl p-4 md:p-6 mb-4">
-            <h2 className="text-lg font-bold text-gray-800 mb-2">Description</h2>
-            <p className="text-gray-700">{summary}</p>
+          <div className={glassCard}>
+            <h2 className="text-lg font-bold text-white mb-2">Description</h2>
+            <p className="text-white/90">{summary}</p>
           </div>
         )}
 
         {/* Animal Info */}
         {animalInfo && (
-          <div className="bg-white/90 rounded-2xl shadow-xl p-4 md:p-6 mb-4">
-            <h2 className="text-lg font-bold text-gray-800 mb-2">Animal Info</h2>
-            <p className="text-gray-700"><span className="font-semibold">Habitat:</span> {animalInfo.characteristics?.habitat}</p>
-            <p className="text-gray-700"><span className="font-semibold">Diet:</span> {animalInfo.characteristics?.diet}</p>
+          <div className={glassCard}>
+            <h2 className="text-lg font-bold text-white mb-2">Animal Info</h2>
+            <p className="text-white/90"><span className="font-semibold">Habitat:</span> {animalInfo.characteristics?.habitat}</p>
+            <p className="text-white/90"><span className="font-semibold">Diet:</span> {animalInfo.characteristics?.diet}</p>
           </div>
         )}
 
         {/* Population */}
         {population && (
-          <div className="bg-white/90 rounded-2xl shadow-xl p-4 md:p-6 mb-4">
-            <h2 className="text-lg font-bold text-gray-800 mb-2">Amazon Population</h2>
-            <p className="text-gray-700">{population}</p>
+          <div className={glassCard}>
+            <h2 className="text-lg font-bold text-white mb-2">Amazon Population</h2>
+            <p className="text-white/90">{population}</p>
           </div>
         )}
 
         {/* 🗺️ Amazon Jungle Map */}
-        <div className="bg-white/90 rounded-2xl shadow-xl p-4 md:p-6 mb-6">
-          <h2 className="text-lg font-bold text-gray-800 mb-2">Amazon Jungle Map</h2>
+        <div className={glassCard}>
+          <h2 className="text-lg font-bold text-white mb-2">Amazon Jungle Map</h2>
           <div className="w-full h-[300px] rounded-xl overflow-hidden">
             <MapContainer
               center={[-3.4653, -62.2159]}
@@ -251,14 +236,14 @@ export default function AmazonWildlifeSearch() {
 
         {/* Search History */}
         {searchHistory.length > 0 && (
-          <div className="bg-white/90 rounded-2xl shadow-xl p-4 md:p-6 mb-10">
-            <h3 className="text-base font-semibold text-gray-800 mb-3">Recent Searches</h3>
+          <div className={glassCard}>
+            <h3 className="text-base font-semibold text-white mb-3">Recent Searches</h3>
             <div className="flex flex-wrap gap-2">
               {searchHistory.map((item, i) => (
                 <button
                   key={i}
                   onClick={() => { setSearchQuery(item); handleSearch(item); }}
-                  className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm hover:bg-emerald-200"
+                  className="px-3 py-1 bg-emerald-100/30 text-emerald-700 rounded-full text-sm hover:bg-emerald-200/40"
                 >
                   {item}
                 </button>
