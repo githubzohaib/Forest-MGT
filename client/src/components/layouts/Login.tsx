@@ -9,7 +9,6 @@ import {
   CheckCircle,
   XCircle,
   Leaf,
-  Shield,
   ArrowRight,
   Sprout,
   Sun,
@@ -22,7 +21,7 @@ export default function ArzEPakLogin() {
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("farmer");
+  const [selectedRole, setSelectedRole] = useState("ranger"); // default role
   const [rememberMe, setRememberMe] = useState(false);
 
   const [popup, setPopup] = useState<{ show: boolean; type: string; message: string }>({
@@ -38,10 +37,6 @@ export default function ArzEPakLogin() {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signupData, setSignupData] = useState({ name: "", phone: "", email: "", password: "" });
   const [resetEmail, setResetEmail] = useState("");
-
-  const [users, setUsers] = useState([
-    { email: "demo@arzepak.com", password: "Demo123!", name: "Demo User", phone: "1234567890" },
-  ]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -70,132 +65,93 @@ export default function ArzEPakLogin() {
 
   const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // ✅ Role-based Login
-  // const handleLogin = () => {
-  //   if (!validateEmail(loginData.email)) return showPopup("error", "Please enter a valid email address");
-  //   if (loginData.password.length < 8) return showPopup("error", "Password must be at least 8 characters long");
-  //   const user = users.find((u) => u.email === loginData.email && u.password === loginData.password);
-  //   if (user) {
-  //     showPopup("success", `Welcome back, ${selectedRole}! Redirecting...`);
-  //     if (rememberMe) localStorage.setItem("rememberedUser", JSON.stringify(user));
-  //     setTimeout(() => {
-  //       switch (selectedRole) {
-  //         case "farmer":
-  //           navigate("/farmerdashboard");
-  //           break;
-  //         case "expert":
-  //           navigate("/expertdashboard");
-  //           break;
-  //         case "admin":
-  //           navigate("/admindashboard");
-  //           break;
-  //         case "buyer":
-  //           navigate("/buyerdashboard");
-  //           break;
-  //         default:
-  //           navigate("/");
-  //       }
-  //     }, 2000);
-  //   } else showPopup("error", "Invalid credentials. Please try again.");
-  // };
+  // Role change handler
+  const handleRoleChange = (role: string) => {
+    setSelectedRole(role);
+    // Admin cannot signup, force login view
+    if (role === "admin") setIsLogin(true);
+  };
 
+  // Login Handler
   const handleLogin = async () => {
-  if (!validateEmail(loginData.email))
-    return showPopup("error", "Please enter a valid email address");
-  if (loginData.password.length < 8)
-    return showPopup("error", "Password must be at least 8 characters long");
+    if (!validateEmail(loginData.email))
+      return showPopup("error", "Please enter a valid email address");
+    if (loginData.password.length < 8)
+      return showPopup("error", "Password must be at least 8 characters long");
 
-  try {
-    const res = await fetch("http://localhost:5001/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: loginData.email,
-        password: loginData.password,
-        role: selectedRole, // ✅ This must match your backend role field
-      }),
-    });
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: loginData.email,
+          password: loginData.password,
+          role: selectedRole,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      return showPopup("error", data.message || "Invalid credentials. Please try again.");
-    }
-
-    showPopup("success", `Welcome back, ${data.user.name || selectedRole}! Redirecting...`);
-    if (rememberMe) localStorage.setItem("userToken", data.token);
-
-    setTimeout(() => {
-      switch (selectedRole) {
-        case "farmer":
-          navigate("/animals");
-          break;
-        case "expert":
-          navigate("/expertdashboard");
-          break;
-        case "admin":
-          navigate("/admindashboard");
-          break;
-        case "buyer":
-          navigate("/buyerdashboard");
-          break;
-        default:
-          navigate("/");
+      if (!res.ok) {
+        return showPopup("error", data.message || "Invalid credentials. Please try again.");
       }
-    }, 2000);
-  } catch (err) {
-    console.error("Login error:", err);
-    showPopup("error", "Server not responding. Please try again.");
-  }
-};
 
+      showPopup("success", `Welcome back, ${data.user.name || selectedRole}! Redirecting...`);
+      if (rememberMe) localStorage.setItem("userToken", data.token);
 
-  // ✅ Signup Handler
-  // const handleSignup = () => {
-  //   if (!signupData.name || !signupData.email || !signupData.password)
-  //     return showPopup("error", "Please fill all fields");
-  //   if (!validateEmail(signupData.email)) return showPopup("error", "Enter a valid email");
-  //   if (signupData.password.length < 8) return showPopup("error", "Password must be at least 8 characters long");
-  //   setUsers([...users, signupData]);
-  //   showPopup("success", "Account created successfully! Please log in.");
-  //   setIsLogin(true);
-  // };
-
-  const handleSignup = async () => {
-  if (!signupData.name || !signupData.email || !signupData.password)
-    return showPopup("error", "Please fill all fields");
-  if (!validateEmail(signupData.email)) return showPopup("error", "Enter a valid email");
-  if (signupData.password.length < 8) return showPopup("error", "Password must be at least 8 characters long");
-
-  try {
-    const res = await fetch("http://localhost:5001/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: signupData.name,
-        phone: signupData.phone,
-        email: signupData.email,
-        password: signupData.password,
-        role: selectedRole,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      return showPopup("error", data.message || "Signup failed");
+      setTimeout(() => {
+        switch (selectedRole) {
+          case "ranger":
+            navigate("/DashboardRanger");
+            break;
+          case "admin":
+            navigate("/DashboardAdmin");
+            break;
+          default:
+            navigate("/");
+        }
+      }, 2000);
+    } catch (err) {
+      console.error("Login error:", err);
+      showPopup("error", "Server not responding. Please try again.");
     }
+  };
 
-    showPopup("success", "Account created successfully! Please log in.");
-    setIsLogin(true);
-  } catch (err) {
-    console.error("Signup error:", err);
-    showPopup("error", "Server not responding. Please try again.");
-  }
-};
+  // Signup Handler (only for non-admin roles)
+  const handleSignup = async () => {
+    if (!signupData.name || !signupData.email || !signupData.password)
+      return showPopup("error", "Please fill all fields");
+    if (!validateEmail(signupData.email)) return showPopup("error", "Enter a valid email");
+    if (signupData.password.length < 8) return showPopup("error", "Password must be at least 8 characters long");
 
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: signupData.name,
+          phone: signupData.phone,
+          email: signupData.email,
+          password: signupData.password,
+          role: selectedRole,
+        }),
+      });
 
-  // ✅ Forgot Password
+      const data = await res.json();
+
+      if (!res.ok) {
+        return showPopup("error", data.message || "Signup failed");
+      }
+
+      showPopup("success", "Account created successfully! Please log in.");
+      setIsLogin(true);
+    } catch (err) {
+      console.error("Signup error:", err);
+      showPopup("error", "Server not responding. Please try again.");
+    }
+  };
+
+  // Forgot Password
   const handleForgot = () => {
     if (!validateEmail(resetEmail)) return showPopup("error", "Please enter a valid email address");
     showPopup("success", "Password reset link sent to your email.");
@@ -213,11 +169,9 @@ export default function ArzEPakLogin() {
       {/* Background */}
       <div
         className="fixed top-0 left-0 w-screen h-screen bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/images/background.jpg')",
-        }}
+        style={{ backgroundImage: "url('/public/background2.jpg')" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/60 via-emerald-800/50 to-green-900/60"></div>
+     
       </div>
 
       {/* Particles */}
@@ -257,8 +211,8 @@ export default function ArzEPakLogin() {
       )}
 
       {/* Glass Box */}
-      <div className="relative z-10 w-[90%] max-w-[600px] mx-auto flex-grow flex items-center justify-center">
-        <div className="relative rounded-3xl p-10 border border-white/30 bg-white/15 backdrop-blur-2xl shadow-[0_25px_70px_-20px_rgba(34,197,94,0.4)] w-full max-w-[600px]">
+      <div className="relative z-10 w-[100%] max-w-[1000px] mx-auto flex-grow flex items-center justify-center">
+        <div className="relative rounded-3xl p-10 border border-white/30 bg-white/15 backdrop-blur-2xl shadow-[0_25px_70px_-20px_rgba(34,197,94,0.4)] w-full max-w-[800px]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-green-300/20 rounded-full blur-2xl"></div>
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-300/20 rounded-full blur-2xl"></div>
 
@@ -266,19 +220,19 @@ export default function ArzEPakLogin() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 rounded-2xl mb-5 shadow-xl relative overflow-hidden">
               <Sprout className="w-10 h-10 text-white relative z-10" />
-              <Sun className="absolute top-1 right-1 w-4 h-4 text-yellow-300 animate-pulse" />
+              {/* <Sun className="absolute top-1 right-1 w-4 h-4 text-yellow-300 animate-pulse" /> */}
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Arz-e-Pak</h1>
-            <p className="text-emerald-100 text-sm">Smart Agriculture Platform</p>
+            <h1 className="text-3xl font-bold text-white mb-2">EcoGuard</h1>
+            <p className="text-emerald-100 text-sm">caption</p>
           </div>
 
-          {/* Role Buttons (Hide for Forgot Password) */}
+          {/* Role Buttons */}
           {!isForgotPassword && (
             <div className="flex justify-between mb-6">
-              {["farmer", "expert", "admin", "buyer"].map((role) => (
+              {["ranger", "admin"].map((role) => (
                 <button
                   key={role}
-                  onClick={() => setSelectedRole(role)}
+                  onClick={() => handleRoleChange(role)}
                   className={`flex-1 mx-1 py-2 rounded-xl text-sm font-semibold transition-all ${
                     selectedRole === role
                       ? "bg-emerald-600 text-white shadow-md"
@@ -353,16 +307,7 @@ export default function ArzEPakLogin() {
                   </button>
                 </div>
 
-                {/* Remember Me */}
-                <div className="flex items-center text-white gap-2">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={() => setRememberMe(!rememberMe)}
-                    className="accent-green-500 w-4 h-4"
-                  />
-                  <span className="text-sm">Remember me</span>
-                </div>
+                
 
                 {/* Access Button */}
                 <button
@@ -372,75 +317,79 @@ export default function ArzEPakLogin() {
                   Access Dashboard <ArrowRight className="w-5 h-5" />
                 </button>
 
-                {/* Create Account */}
-                <p className="text-center text-sm text-white mt-5">
-                  Don’t have an account?{" "}
-                  <span
-                    onClick={() => setIsLogin(false)}
-                    className="cursor-pointer text-emerald-300 hover:underline"
-                  >
-                    Create Account
-                  </span>
-                </p>
+                {/* Signup link (hide for admin) */}
+                {selectedRole !== "admin" && (
+                  <p className="text-center text-sm text-white mt-5">
+                    Don’t have an account?{" "}
+                    <span
+                      onClick={() => setIsLogin(false)}
+                      className="cursor-pointer text-emerald-300 hover:underline"
+                    >
+                      Create Account
+                    </span>
+                  </p>
+                )}
               </div>
             </>
           ) : (
             <>
-              {/* Signup Form */}
-              <div className="space-y-4">
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Full Name"
-                    value={signupData.name}
-                    onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                    className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
-                  />
+              {/* Signup Form - only for non-admin */}
+              {selectedRole !== "admin" && (
+                <div className="space-y-4">
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder="Full Name"
+                      value={signupData.name}
+                      onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                      className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
+                    <input
+                      type="tel"
+                      placeholder="Phone Number"
+                      value={signupData.phone}
+                      onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
+                      className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
+                    <input
+                      type="email"
+                      placeholder="Email Address"
+                      value={signupData.email}
+                      onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                      className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password (min 8 chars)"
+                      value={signupData.password}
+                      onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                      className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
+                    />
+                  </div>
+                  <button
+                    onClick={handleSignup}
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:from-green-500 hover:to-emerald-500 shadow-lg"
+                  >
+                    Sign Up
+                  </button>
+                  <p
+                    onClick={() => setIsLogin(true)}
+                    className="text-center text-sm text-white mt-5 cursor-pointer hover:text-emerald-300"
+                  >
+                    Already have an account? Login
+                  </p>
                 </div>
-                <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
-                  <input
-                    type="tel"
-                    placeholder="Phone Number"
-                    value={signupData.phone}
-                    onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
-                    className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
-                  />
-                </div>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
-                  <input
-                    type="email"
-                    placeholder="Email Address"
-                    value={signupData.email}
-                    onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                    className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
-                  />
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-300 w-5 h-5" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password (min 8 chars)"
-                    value={signupData.password}
-                    onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                    className="w-full bg-white/10 border border-white/30 text-white rounded-xl px-12 py-3 placeholder-emerald-200 focus:outline-none focus:border-green-400 focus:bg-white/20"
-                  />
-                </div>
-                <button
-                  onClick={handleSignup}
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:from-green-500 hover:to-emerald-500 shadow-lg"
-                >
-                  Sign Up
-                </button>
-                <p
-                  onClick={() => setIsLogin(true)}
-                  className="text-center text-sm text-white mt-5 cursor-pointer hover:text-emerald-300"
-                >
-                  Already have an account? Login
-                </p>
-              </div>
+              )}
             </>
           )}
         </div>
