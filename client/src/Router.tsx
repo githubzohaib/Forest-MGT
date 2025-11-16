@@ -10,6 +10,7 @@ import Weather from "./components/layouts/Weather";
 import AnimalsList from "./components/layouts/Animals";
 import Reports from "./components/layouts/Reports";
 import AdminEdit from "./components/layouts/Adminedit"; // ✅ import AdminEdit
+import LandingPage from "./components/layouts/landingpage";
 
 export const router = createBrowserRouter([
   // 🔓 PUBLIC ROUTES
@@ -38,7 +39,9 @@ export const router = createBrowserRouter([
       { path: "reports", element: <Reports /> },
 
       // ✅ Admin Edit page
-      { path: "adminedit", element: <AdminEdit /> }, 
+      { path: "adminedit", element: <AdminEdit /> },
+      { path: "landingpage", element: <LandingPage /> },
+
 
       // Default redirect (root → login)
       { index: true, element: <Navigate to="/auth/login" replace /> },
