@@ -42,6 +42,8 @@ export const router = createBrowserRouter([
       { path: "adminedit", element: <AdminEdit /> },
       { path: "landingpage", element: <LandingPage /> },
 
+     
+
 
       // Default redirect (root → login)
       { index: true, element: <Navigate to="/auth/login" replace /> },
