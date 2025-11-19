@@ -43,6 +43,8 @@ export const router = createBrowserRouter([
       { path: "landingpage", element: <LandingPage /> },
       { path: "chat", element: <Chat userEmail="admin@gmail.com" userRole="admin" /> },
 
+     
+
 
       // Default redirect (root → login)
       { index: true, element: <Navigate to="/auth/login" replace /> },

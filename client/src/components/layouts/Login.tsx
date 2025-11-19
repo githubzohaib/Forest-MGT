@@ -96,6 +96,13 @@ export default function ArzEPakLogin() {
         return showPopup("error", data.message || "Invalid credentials. Please try again.");
       }
 
+      if (rememberMe) localStorage.setItem("userToken", data.token);
+
+// Save user details for dashboard
+    localStorage.setItem("userData", JSON.stringify(data.user));
+    localStorage.setItem("token", data.token);
+          
+
       showPopup("success", `Welcome back, ${data.user.name || selectedRole}! Redirecting...`);
       if (rememberMe) localStorage.setItem("userToken", data.token);
 
@@ -116,6 +123,9 @@ export default function ArzEPakLogin() {
       showPopup("error", "Server not responding. Please try again.");
     }
   };
+
+  
+
 
   // Signup Handler (only for non-admin roles)
   const handleSignup = async () => {
@@ -223,7 +233,7 @@ export default function ArzEPakLogin() {
               {/* <Sun className="absolute top-1 right-1 w-4 h-4 text-yellow-300 animate-pulse" /> */}
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">EcoGuard</h1>
-            <p className="text-emerald-100 text-sm">caption</p>
+            {/* <p className="text-emerald-100 text-sm">caption</p> */}
           </div>
 
           {/* Role Buttons */}

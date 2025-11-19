@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Leaf, AlertCircle, Loader, X } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -16,6 +16,7 @@ const amazonPopulation = {
   'boa constrictor': 'Estimated 1+ million individuals'
 };
 
+
 export default function AmazonWildlifeSearch() {
   const [searchQuery, setSearchQuery] = useState('');
   const [summary, setSummary] = useState('');
@@ -26,6 +27,24 @@ export default function AmazonWildlifeSearch() {
   const [error, setError] = useState('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [fullscreenImage, setFullscreenImage] = useState('');
+
+  const [dbAnimals, setDbAnimals] = useState([]);
+
+  useEffect(() => {
+  const fetchDBAnimals = async () => {
+    try {
+      const res = await fetch("http://localhost:5001/api/animals");
+      const data = await res.json();
+      setDbAnimals(data);
+    } catch (err) {
+      console.error("Error fetching animal database", err);
+    }
+  };
+
+  fetchDBAnimals();
+ }, []);
+
+
 
   const API_NINJAS_KEY = '44EVcRXva+7WaoKyHQObog==DXYzTXZmmDKKwW4H';
   const UNSPLASH_KEY = 'I3OXnoZ_e4Di06zuuCmZjnbAQNO6wRUMivIwJqAg81U';
@@ -60,10 +79,21 @@ export default function AmazonWildlifeSearch() {
       if (ninjasData?.length > 0) setAnimalInfo(ninjasData[0]);
 
       // Amazon population
-      const popKey = Object.keys(amazonPopulation).find(
-        key => key.toLowerCase() === query.toLowerCase()
+      // const popKey = Object.keys(amazonPopulation).find(
+      //   key => key.toLowerCase() === query.toLowerCase()
+      // );
+      // setPopulation(popKey ? amazonPopulation[popKey as keyof typeof amazonPopulation] : "This species does not live in the Amazon");
+
+      
+      const match = dbAnimals.find(
+        (a) => a.name.toLowerCase() === query.toLowerCase()
       );
-      setPopulation(popKey ? amazonPopulation[popKey as keyof typeof amazonPopulation] : "This species does not live in the Amazon");
+
+      if (match) {
+        setPopulation(match.population);
+      } else {
+        setPopulation("Population data not found in database");
+      }
 
       // Unsplash image
       const unsplashResp = await fetch(
@@ -213,6 +243,9 @@ export default function AmazonWildlifeSearch() {
             <p className="text-white/90">{population}</p>
           </div>
         )}
+
+     
+
 
         {/* 🗺️ Amazon Jungle Map */}
         <div className={glassCard}>
