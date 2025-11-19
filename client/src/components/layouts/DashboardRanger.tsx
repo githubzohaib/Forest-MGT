@@ -26,12 +26,11 @@ const RangerDashboard = () => {
   };
 
 
-  const badges = [
-    { name: 'Wildlife Protector', icon: '🦌', earned: '2024' },
-    { name: 'Quick Responder', icon: '⚡', earned: '2025' },
-    { name: '100 Patrols', icon: '🎖️', earned: '2024' },
-    { name: 'Safety Champion', icon: '🛡️', earned: '2025' },
-  ];
+//   const [notifications, setNotifications] = useState([
+//     { id: 1, message: 'New animal added: Bengal Tiger spotted in Zone A', time: '2 hours ago', isNew: true },
+//     { id: 2, message: 'Ranger Sarah Mitchell joined the team', time: '5 hours ago', isNew: true },
+//     { id: 3, message: 'Monthly patrol report due tomorrow', time: '1 day ago', isNew: false },
+//   ]);
 
   const handleNavigateToChat = () => {
     // In your actual implementation, use: navigate('/chat');
@@ -235,3 +234,4 @@ const RangerDashboard = () => {
 };
 
 export default RangerDashboard;
+

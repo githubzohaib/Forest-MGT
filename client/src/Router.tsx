@@ -11,7 +11,7 @@ import AnimalsList from "./components/layouts/Animals";
 import Reports from "./components/layouts/Reports";
 import AdminEdit from "./components/layouts/Adminedit"; // ✅ import AdminEdit
 import LandingPage from "./components/layouts/landingpage";
-
+import Chat from "./components/layouts/Chat";
 export const router = createBrowserRouter([
   // 🔓 PUBLIC ROUTES
   {
@@ -41,12 +41,14 @@ export const router = createBrowserRouter([
       // ✅ Admin Edit page
       { path: "adminedit", element: <AdminEdit /> },
       { path: "landingpage", element: <LandingPage /> },
+      { path: "chat", element: <Chat userEmail="admin@gmail.com" userRole="admin" /> },
 
      
 
 
       // Default redirect (root → login)
       { index: true, element: <Navigate to="/auth/login" replace /> },
+
     ],
   },
 ]);
